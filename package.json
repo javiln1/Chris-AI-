@@ -4,9 +4,6 @@
   "description": "GPC AI Template with GPT, Claude, and Vector Store integration",
   "main": "index.html",
   "scripts": {
-    "dev": "vercel dev",
-    "build": "echo 'No build step needed for static HTML'",
-    "deploy": "vercel --prod",
     "reindex": "node scripts/harvest_from_sheet.js",
     "cron:start": "node scripts/cron.js",
     "check:openai": "node scripts/check_openai_key.js",
