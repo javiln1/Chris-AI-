@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GPC AI Logo</title>
+    <meta name="description" content="GPC AI Logo - AI-powered workflow automation platform">
+    <meta name="keywords" content="AI, workflow, automation, template">
+    <meta name="author" content="GPC AI Team">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Styles -->
+    <style>
+        :root {
+            --background: #000000;
+            --foreground: #ffffff;
+            --primary: #00ff00;
+            --accent: #00ff00;
+            --text-secondary: #9ca3af;
+            --text-muted: #6b7280;
+            --border: #333333;
+        }
+
+        * {
+            box-sizing: border-box;
+            padding: 0;
+            margin: 0;
+        }
+
+        html, body {
+            max-width: 100vw;
+            overflow-x: hidden;
+            background: var(--background);
+            color: var(--foreground);
+            font-family: 'Inter', system-ui, sans-serif;
+            font-weight: 600;
+        }
+
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #000000;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #333333;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #00ff00;
+        }
+
+        /* Selection */
+        ::selection {
+            background: rgba(0, 255, 0, 0.3);
+            color: #ffffff;
+        }
+
+        /* Custom animations */
+        @keyframes glow {
+            0% { box-shadow: 0 0 20px rgba(0, 255, 0, 0.3); }
+            100% { box-shadow: 0 0 30px rgba(0, 255, 0, 0.6); }
+        }
+
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+
+        @keyframes slideUp {
+            0% { transform: translateY(10px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+
+        .animate-glow {
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        .animate-slide-up {
+            animation: slideUp 0.3s ease-out;
+        }
+
+        /* Custom utility classes */
+        .bg-background { background-color: #000000 !important; }
+        .bg-custom-dark-secondary { background-color: #000000 !important; }
+        .bg-custom-dark-tertiary { background-color: #0a0a0a !important; }
+        .bg-custom-dark { background-color: #0a0a0a !important; }
+        .bg-accent { background-color: #00cc00; }
+        .bg-primary-dark { background-color: #009900; }
+        
+        .text-text { color: #ffffff; }
+        .text-text-secondary { color: #9ca3af; }
+        .text-text-muted { color: #6b7280; }
+        .text-accent { color: #00cc00; }
+        
+        .border-border { border-color: #333333; }
+        .border-gray-700 { border-color: #00ff00; }
+        
+        .shadow-none { box-shadow: 0 0 20px rgba(0, 255, 0, 0.3); }
+        .shadow-none-hover { box-shadow: 0 0 30px rgba(0, 255, 0, 0.5); }
+        
+        .rounded-xl { border-radius: 1rem; }
+        .rounded-2xl { border-radius: 1.5rem; }
+        .rounded-3xl { border-radius: 2rem; }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            .sidebar {
+                position: fixed;
+                top: 80px;
+                height: calc(100vh - 80px);
+                z-index: 50;
+                transform: translateX(-100%);
+                transition: transform 0.3s ease-in-out;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .sidebar-toggle {
+                display: block;
+            }
+        }
+
+        .sidebar-toggle {
+            display: none;
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Header -->
+    <header class="h-20 bg-custom-dark-secondary border-b border-border flex items-center justify-center px-6 relative">
+        <!-- Mobile menu toggle -->
+        <button class="sidebar-toggle absolute left-4 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-text" onclick="toggleLeftSidebar()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+        
+        <div class="flex items-center gap-4">
+            <!-- Logo -->
+            <img src="assets/gpc-ai-logo.png" alt="GPC AI Logo Design" class="w-24 h-24 rounded-2xl object-cover">            
+        </div>
+
+        <!-- Right sidebar toggle for mobile -->
+        <button class="sidebar-toggle absolute right-4 top-1/2 transform -translate-y-1/2 text-text-secondary hover:text-text" onclick="toggleRightSidebar()">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+            </svg>
+        </button>
+    </header>
+
+    <!-- Main Content -->
+    <div class="flex h-[calc(100vh-80px)]">
+        <!-- Left Sidebar - Workflows -->
+        <aside id="leftSidebar" class="sidebar w-80 bg-custom-dark-secondary border-r border-border p-6 overflow-y-auto">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-text mb-2">Workflows</h2>
+                <p class="text-text-secondary text-sm">Select a workflow to get started</p>
+            </div>
+            
+            <div class="space-y-3" id="workflowsList">
+                <!-- Workflows will be populated by JavaScript -->
+            </div>
+            
+            <button class="w-full mt-6 p-3 bg-accent text-black font-semibold rounded-xl hover:bg-primary-dark transition-colors duration-200 shadow-none hover:shadow-none-hover">
+                + New Workflow
+            </button>
+        </aside>
+        
+        <!-- Main Chat Area -->
+        <div class="flex-1 flex flex-col">
+            <div class="flex-1 flex flex-col bg-custom-dark">
+                <!-- Chat Header -->
+            <div class="flex items-center justify-between mb-4">
+                <div>
+                    <h2 class="text-xl font-bold text-text">AI Assistant</h2>
+                    <p class="text-text-secondary text-sm">Ask me anything about workflows, automation, or get help with your tasks</p>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <select id="modelSelector" class="bg-custom-dark border border-border text-text rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-gray-700">
+                        <option value="gpt-4">GPT-4</option>
+                        <option value="gpt-3.5-turbo">GPT-3.5 Turbo</option>
+                        <option value="claude">Claude 3 Sonnet</option>
+                    </select>
+                    <label class="flex items-center space-x-2 text-text-secondary text-sm">
+                        <input type="checkbox" id="useVectorStore" class="rounded border-border bg-custom-dark text-accent focus:ring-accent">
+                        <span>Use Knowledge Base</span>
+                    </label>
+                </div>
+            </div>
+                <div class="p-6 border-b border-border">
+                    <h2 class="text-xl font-bold text-text">AI Assistant</h2>
+                    <p class="text-text-secondary text-sm">Ask me anything about workflows, automation, or get help with your tasks</p>
+                </div>
+
+                <!-- Messages -->
+                <div class="flex-1 overflow-y-auto p-6 space-y-4" id="chatMessages">
+                    <!-- Messages will be populated by JavaScript -->
+                </div>
+
+                <!-- Input Area -->
+                <div class="p-6 border-t border-border">
+                    <div class="flex gap-3">
+                        <div class="flex-1 relative">
+                            <textarea
+                                id="chatInput"
+                                placeholder="Type your message here..."
+                                class="w-full p-4 pr-12 bg-custom-dark-secondary border border-border rounded-xl text-text placeholder-text-muted resize-none focus:outline-none focus:border-gray-700 focus:ring-1 focus:ring-gray-600 transition-all duration-200"
+                                rows="3"
+                                onkeypress="handleKeyPress(event)"
+                            ></textarea>
+                            <button
+                                onclick="sendMessage()"
+                                class="absolute right-3 bottom-3 p-2 bg-accent text-black rounded-lg hover:bg-primary-dark transition-colors duration-200"
+                            >
+                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- How to Use Section -->
+            <div class="border-t border-border bg-custom-dark-secondary">
+                <div class="p-6">
+                    <button onclick="toggleHowToUse()" class="flex items-center justify-between w-full text-left">
+                        <h3 class="text-lg font-semibold text-text">How to Use</h3>
+                        <svg id="howToUseIcon" class="w-5 h-5 text-text-secondary transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                        </svg>
+                    </button>
+
+                    <div id="howToUseContent" class="mt-4 space-y-4 animate-fade-in hidden">
+                        <p class="text-text-secondary text-sm">
+                            Get started with GPC AI in three simple steps:
+                        </p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div class="p-4 bg-custom-dark rounded-xl border border-border hover:border-gray-700 transition-all duration-200">
+                                <div class="text-3xl mb-3">📋</div>
+                                <h4 class="font-semibold text-text mb-2">Select a Workflow</h4>
+                                <p class="text-text-secondary text-sm">Choose from the available workflows in the left sidebar or create a new one.</p>
+                            </div>
+                            <div class="p-4 bg-custom-dark rounded-xl border border-border hover:border-gray-700 transition-all duration-200">
+                                <div class="text-3xl mb-3">💬</div>
+                                <h4 class="font-semibold text-text mb-2">Chat with AI</h4>
+                                <p class="text-text-secondary text-sm">Describe what you want to accomplish in the chat area. Be specific about your goals.</p>
+                            </div>
+                            <div class="p-4 bg-custom-dark rounded-xl border border-border hover:border-gray-700 transition-all duration-200">
+                                <div class="text-3xl mb-3">✅</div>
+                                <h4 class="font-semibold text-text mb-2">Review & Execute</h4>
+                                <p class="text-text-secondary text-sm">The AI will help you set up and execute your workflow. Check the history for results.</p>
+                            </div>
+                        </div>
+
+                        <div class="mt-6 p-4 bg-accent/10 border border-gray-700/20 rounded-xl">
+                            <h4 class="font-semibold text-accent mb-2">💡 Pro Tips</h4>
+                            <ul class="text-text-secondary text-sm space-y-1">
+                                <li>• Be specific about your requirements for better results</li>
+                                <li>• Use the workflow templates as starting points</li>
+                                <li>• Check the history to track your progress</li>
+                                <li>• The AI learns from your usage patterns</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Sidebar - History -->
+        <aside id="rightSidebar" class="sidebar w-80 bg-custom-dark-secondary border-l border-border p-6 overflow-y-auto">
+            <div class="mb-6">
+                <h2 class="text-xl font-bold text-text mb-2">History</h2>
+                <p class="text-text-secondary text-sm">Recent workflow executions</p>
+            </div>
+            
+            <div class="space-y-3" id="historyList">
+                <!-- History items will be populated by JavaScript -->
+            </div>
+            
+            <button class="w-full mt-6 p-3 border border-border text-text-secondary font-medium rounded-xl hover:border-gray-700 hover:text-text transition-colors duration-200">
+                View All History
+            </button>
+        </aside>
+    </div>
+
+    <!-- API Client -->
+    <script src="js/api-client.js"></script>
+    
+    <!-- JavaScript -->
+    <script>
+        // Sample data
+        const workflows = [
+            {
+                id: '1',
+                name: 'Content Generation',
+                description: 'Automated content creation workflow',
+                status: 'active'
+            },
+            {
+                id: '2',
+                name: 'Data Processing',
+                description: 'ETL pipeline for data analysis',
+                status: 'active'
+            },
+            {
+                id: '3',
+                name: 'Email Automation',
+                description: 'Customer communication workflow',
+                status: 'draft'
+            },
+            {
+                id: '4',
+                name: 'Report Generation',
+                description: 'Weekly analytics reports',
+                status: 'inactive'
+            }
+        ];
+
+        const history = [
+            {
+                id: '1',
+                title: 'Content generation for Q4 campaign',
+                timestamp: '2 hours ago',
+                workflow: 'Content Generation',
+                status: 'completed'
+            },
+            {
+                id: '2',
+                title: 'Data processing for user analytics',
+                timestamp: '1 day ago',
+                workflow: 'Data Processing',
+                status: 'completed'
+            },
+            {
+                id: '3',
+                title: 'Email automation setup',
+                timestamp: '3 days ago',
+                workflow: 'Email Automation',
+                status: 'failed'
+            },
+            {
+                id: '4',
+                title: 'Weekly report generation',
+                timestamp: '1 week ago',
+                workflow: 'Report Generation',
+                status: 'completed'
+            }
+        ];
+
+        let messages = [
+            {
+                id: '1',
+                type: 'ai',
+                content: 'Hello! I\'m your AI assistant. I can help you with workflow automation, content generation, data processing, and more. What would you like to work on today?',
+                timestamp: new Date()
+            }
+        ];
+
+        let selectedWorkflow = '1';
+
+        // Initialize API client
+        const apiClient = new APIClient();
+        
+        // Initialize the app
+        document.addEventListener('DOMContentLoaded', function() {
+            renderWorkflows();
+            renderHistory();
+            renderMessages();
+        });
+
+        // Render workflows
+        function renderWorkflows() {
+            const workflowsList = document.getElementById('workflowsList');
+            workflowsList.innerHTML = workflows.map(workflow => `
+                <div
+                    class="p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:shadow-none-hover ${
+                        selectedWorkflow === workflow.id
+                            ? 'border-gray-700 bg-custom-dark-tertiary shadow-none'
+                            : 'border-border bg-custom-dark hover:border-gray-700'
+                    }"
+                    onclick="selectWorkflow('${workflow.id}')"
+                >
+                    <div class="flex items-start justify-between mb-2">
+                        <h3 class="font-semibold text-text">${workflow.name}</h3>
+                        <span class="text-xs font-medium px-2 py-1 rounded-full bg-custom-dark ${getStatusColor(workflow.status)}">
+                            ${workflow.status}
+                        </span>
+                    </div>
+                    <p class="text-text-secondary text-sm">${workflow.description}</p>
+                </div>
+            `).join('');
+        }
+
+        // Render history
+        function renderHistory() {
+            const historyList = document.getElementById('historyList');
+            historyList.innerHTML = history.map(item => `
+                <div class="p-4 rounded-xl border border-border bg-custom-dark hover:border-gray-700 transition-all duration-200 cursor-pointer">
+                    <div class="flex items-start justify-between mb-2">
+                        <h3 class="font-semibold text-text text-sm leading-tight">${item.title}</h3>
+                        <span class="text-xs font-medium px-2 py-1 rounded-full bg-custom-dark ${getStatusColor(item.status)}">
+                            ${getStatusIcon(item.status)}
+                        </span>
+                    </div>
+                    <div class="text-text-secondary text-xs space-y-1">
+                        <p>${item.workflow}</p>
+                        <p>${item.timestamp}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Render messages
+        function renderMessages() {
+            const chatMessages = document.getElementById('chatMessages');
+            chatMessages.innerHTML = messages.map(message => `
+                <div class="flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}">
+                    <div class="max-w-[70%] p-4 rounded-2xl ${
+                        message.type === 'user'
+                            ? 'bg-accent text-black'
+                            : 'bg-custom-dark-secondary text-text border border-border'
+                    }">
+                        <p class="text-sm leading-relaxed">${message.content}</p>
+                        <p class="text-xs mt-2 ${
+                            message.type === 'user' ? 'text-black/70' : 'text-text-muted'
+                        }">
+                            ${message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                        </p>
+                    </div>
+                </div>
+            `).join('');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // Helper functions
+        function getStatusColor(status) {
+            switch (status) {
+                case 'active':
+                case 'completed':
+                    return 'text-accent';
+                case 'inactive':
+                case 'draft':
+                    return 'text-text-secondary';
+                case 'failed':
+                    return 'text-red-400';
+                case 'running':
+                    return 'text-blue-400';
+                default:
+                    return 'text-text-secondary';
+            }
+        }
+
+        function getStatusIcon(status) {
+            switch (status) {
+                case 'completed':
+                    return '✓';
+                case 'failed':
+                    return '✗';
+                case 'running':
+                    return '⟳';
+                default:
+                    return '•';
+            }
+        }
+
+        // Workflow selection
+        function selectWorkflow(id) {
+            selectedWorkflow = id;
+            renderWorkflows();
+        }
+
+        // Chat functionality
+        function sendMessage() {
+            const input = document.getElementById('chatInput');
+            const content = input.value.trim();
+            
+            if (!content) return;
+
+            const newMessage = {
+                id: Date.now().toString(),
+                type: 'user',
+                content: content,
+                timestamp: new Date()
+            };
+
+            messages.push(newMessage);
+            input.value = '';
+            renderMessages();
+
+            // Simulate AI response
+            setTimeout(() => {
+                const aiResponse = {
+                    id: (Date.now() + 1).toString(),
+                    type: 'ai',
+                    content: 'I understand you want to work on that. Let me help you set up the appropriate workflow. What specific details can you provide?',
+                    timestamp: new Date()
+                };
+                messages.push(aiResponse);
+                renderMessages();
+            }, 1000);
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                sendMessage();
+            }
+        }
+
+        // How to use toggle
+        function toggleHowToUse() {
+            const content = document.getElementById('howToUseContent');
+            const icon = document.getElementById('howToUseIcon');
+            
+            if (content.classList.contains('hidden')) {
+                content.classList.remove('hidden');
+                icon.style.transform = 'rotate(180deg)';
+            } else {
+                content.classList.add('hidden');
+                icon.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        // Mobile sidebar toggles
+        function toggleLeftSidebar() {
+            const sidebar = document.getElementById('leftSidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        function toggleRightSidebar() {
+            const sidebar = document.getElementById('rightSidebar');
+            sidebar.classList.toggle('open');
+        }
+
+        // Close sidebars when clicking outside on mobile
+        document.addEventListener('click', function(e) {
+            if (window.innerWidth <= 768) {
+                const leftSidebar = document.getElementById('leftSidebar');
+                const rightSidebar = document.getElementById('rightSidebar');
+                
+                if (!leftSidebar.contains(e.target) && !e.target.closest('.sidebar-toggle')) {
+                    leftSidebar.classList.remove('open');
+                }
+                
+                if (!rightSidebar.contains(e.target) && !e.target.closest('.sidebar-toggle')) {
+                    rightSidebar.classList.remove('open');
+                }
+            }
+        });
+    </script>
+</body>
+</html>

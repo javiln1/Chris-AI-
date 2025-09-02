@@ -1,0 +1,32 @@
+{
+  "name": "gpc-ai-template",
+  "version": "1.0.0",
+  "description": "GPC AI Template with GPT, Claude, and Vector Store integration",
+  "main": "index.html",
+  "scripts": {
+    "dev": "vercel dev",
+    "build": "echo 'No build step needed for static HTML'",
+    "deploy": "vercel --prod",
+    "reindex": "node scripts/harvest_from_sheet.js",
+    "cron:start": "node scripts/cron.js",
+    "check:openai": "node scripts/check_openai_key.js",
+    "check:supabase": "node scripts/check_supabase_key.js",
+    "check:sheet": "node scripts/check_sheet_url.js"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.18.0",
+    "@supabase/supabase-js": "^2.39.0",
+    "axios": "^1.6.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "node-cron": "^3.0.3",
+    "openai": "^4.28.0",
+    "papaparse": "^5.4.1"
+  },
+  "devDependencies": {
+    "vercel": "^33.5.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

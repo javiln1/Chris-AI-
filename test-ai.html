@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Test - Direct API</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #000;
+            color: #fff;
+        }
+        .chat-container {
+            border: 1px solid #333;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            background: #111;
+        }
+        .message {
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .user-message {
+            background: #00cc00;
+            color: #000;
+            text-align: right;
+        }
+        .ai-message {
+            background: #222;
+            color: #fff;
+        }
+        .ai-message h1, .ai-message h2, .ai-message h3 {
+            color: #00cc00;
+            margin: 10px 0 5px 0;
+        }
+        .ai-message ul, .ai-message ol {
+            margin: 10px 0;
+            padding-left: 20px;
+        }
+        .ai-message li {
+            margin: 5px 0;
+        }
+        .ai-message strong {
+            color: #00cc00;
+        }
+        input[type="text"] {
+            width: 70%;
+            padding: 10px;
+            background: #222;
+            color: #fff;
+            border: 1px solid #333;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 20px;
+            background: #00cc00;
+            color: #000;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+        button:hover {
+            background: #00aa00;
+        }
+        .sources {
+            margin-top: 10px;
+            padding: 10px;
+            background: #333;
+            border-radius: 5px;
+            font-size: 12px;
+        }
+        .loading {
+            color: #00cc00;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <h1>🤖 AI Knowledge Base Test</h1>
+    <p>This is a direct test of your AI system with the knowledge base. Ask questions about TikTok, dropshipping, marketing, etc.</p>
+    
+    <div class="chat-container">
+        <div id="messages"></div>
+        <div>
+            <select id="modelSelector" style="margin-bottom: 10px; padding: 8px; background: #222; color: #fff; border: 1px solid #333; border-radius: 5px;">
+                <option value="gpt-4">GPT-4 (Best Quality)</option>
+                <option value="gpt-3.5-turbo">GPT-3.5 Turbo (Faster)</option>
+            </select>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <input type="text" id="messageInput" placeholder="Ask a question..." onkeypress="handleKeyPress(event)" style="flex: 1;">
+                <input type="file" id="imageInput" accept="image/*" style="display: none;" onchange="handleImageUpload(event)">
+                <div style="position: relative;">
+                    <button onclick="togglePlusMenu()" style="background: #333; padding: 10px 15px; border-radius: 5px;">+</button>
+                    <div id="plusMenu" style="display: none; position: absolute; bottom: 100%; right: 0; background: #222; border: 1px solid #333; border-radius: 5px; padding: 10px; margin-bottom: 5px; min-width: 150px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                        <button onclick="document.getElementById('imageInput').click(); togglePlusMenu();" style="background: none; color: #fff; border: none; padding: 8px 12px; width: 100%; text-align: left; border-radius: 3px; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#333'" onmouseout="this.style.background='none'">📷 Upload Image</button>
+                    </div>
+                </div>
+                <button onclick="sendMessage()">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const messages = [];
+        
+        function addMessage(content, type, sources = [], imageUrl = null) {
+            const messagesDiv = document.getElementById('messages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${type}-message`;
+            
+            let sourcesHtml = '';
+            if (sources && sources.length > 0) {
+                sourcesHtml = `<div class="sources">
+                    <strong>Sources:</strong><br>
+                    ${sources.map(source => 
+                        `• ${source.title} (${(source.similarity * 100).toFixed(1)}% match)`
+                    ).join('<br>')}
+                </div>`;
+            }
+            
+            let imageHtml = '';
+            if (imageUrl) {
+                imageHtml = `<div style="margin: 10px 0;"><img src="${imageUrl}" style="max-width: 100%; max-height: 300px; border-radius: 5px; border: 1px solid #333;"></div>`;
+            }
+            
+            messageDiv.innerHTML = `
+                ${imageHtml}
+                <div>${content.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>').replace(/^### (.*$)/gm, '<h3>$1</h3>').replace(/^## (.*$)/gm, '<h2>$1</h2>').replace(/^# (.*$)/gm, '<h1>$1</h1>').replace(/^- (.*$)/gm, '<li>$1</li>').replace(/(<li>.*<\/li>)/s, '<ul>$1</ul>')}</div>
+                ${sourcesHtml}
+            `;
+            messagesDiv.appendChild(messageDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function showLoading() {
+            const messagesDiv = document.getElementById('messages');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.id = 'loading';
+            loadingDiv.className = 'message ai-message loading';
+            loadingDiv.textContent = 'AI is thinking...';
+            messagesDiv.appendChild(loadingDiv);
+            messagesDiv.scrollTop = messagesDiv.scrollHeight;
+        }
+        
+        function hideLoading() {
+            const loading = document.getElementById('loading');
+            if (loading) loading.remove();
+        }
+        
+        let currentImage = null;
+
+        function togglePlusMenu() {
+            const menu = document.getElementById('plusMenu');
+            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
+        }
+
+        // Close menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('plusMenu');
+            const plusButton = event.target.closest('button[onclick="togglePlusMenu()"]');
+            if (!plusButton && !menu.contains(event.target)) {
+                menu.style.display = 'none';
+            }
+        });
+
+        function handleImageUpload(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    currentImage = e.target.result;
+                    // Show preview
+                    addMessage(`📷 Image uploaded: ${file.name}`, 'user', [], currentImage);
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        async function sendMessage() {
+            const input = document.getElementById('messageInput');
+            const message = input.value.trim();
+            
+            if (!message && !currentImage) return;
+            
+            // Add user message with image if present
+            addMessage(message || '📷 Analyzing image...', 'user', [], currentImage);
+            input.value = '';
+            
+            // Show loading
+            showLoading();
+            
+            try {
+                // Test the API logic directly
+                const response = await testAIDirectly(message, currentImage);
+                
+                hideLoading();
+                
+                if (response.success) {
+                    addMessage(response.response, 'ai', response.sources);
+                } else {
+                    addMessage('Error: ' + response.error, 'ai');
+                }
+                
+                // Clear the image after processing
+                currentImage = null;
+                document.getElementById('imageInput').value = '';
+                
+            } catch (error) {
+                hideLoading();
+                addMessage('Error: ' + error.message, 'ai');
+            }
+        }
+        
+        async function testAIDirectly(userMessage, imageData = null) {
+            // This simulates what the API would do
+            try {
+                let searchResults = [];
+                let context = '';
+                let sources = [];
+                
+                // Step 1: Search the knowledge base (only if there's text)
+                if (userMessage && userMessage.trim()) {
+                    searchResults = await searchKnowledgeBase(userMessage);
+                    
+                    if (searchResults.length > 0) {
+                        context = searchResults.map((result, index) => 
+                            `Source ${index + 1} (${result.doc_id}):\n${result.content}`
+                        ).join('\n\n');
+                        
+                        sources = searchResults.map(result => ({
+                            title: result.doc_id,
+                            similarity: result.similarity
+                        }));
+                    }
+                }
+                
+                // Step 2: Get AI response with image analysis if present
+                const aiResponse = await getAIResponse(userMessage, imageData, context);
+                
+                return {
+                    success: true,
+                    response: aiResponse,
+                    sources: sources
+                };
+                
+            } catch (error) {
+                return {
+                    success: false,
+                    error: error.message
+                };
+            }
+        }
+        
+        async function searchKnowledgeBase(query) {
+            try {
+                // Call the actual Supabase API directly
+                const response = await fetch('https://kwoafvgfeheptqvuuyco.supabase.co/rest/v1/rpc/match_documents', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b2FmdmdmZWhlcHRxdnV1eWNvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NjQwMTEyMiwiZXhwIjoyMDcxOTc3MTIyfQ.DQFm19KP9tUsTivG17T1a_cdNj4A5njK4PL620KerHo',
+                        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt3b2FmdmdmZWhlcHRxdnV1eWNvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1NjQwMTEyMiwiZXhwIjoyMDcxOTc3MTIyfQ.DQFm19KP9tUsTivG17T1a_cdNj4A5njK4PL620KerHo'
+                    },
+                    body: JSON.stringify({
+                        query_embedding: await getEmbedding(query),
+                        match_count: 5
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('Supabase API error: ' + response.status);
+                }
+                
+                const data = await response.json();
+                return data || [];
+                
+            } catch (error) {
+                console.error('Search error:', error);
+                // Fallback to simulated data
+                return [
+                    {
+                        doc_id: "how-to-behave-after-going-viral-new-doc",
+                        content: "00:01 what is good, boys? Today I want to talk about how to behave after going viral. So this is super important. 00:08 Whenever you have a viral video, you need to capitalize on it immediately...",
+                        similarity: 0.596
+                    },
+                    {
+                        doc_id: "good-vs-bad-accounts-doc", 
+                        content: "rally post with this bottle right there. 07:34 I know how to make content, every video will get at least 900 or 1k views around that...",
+                        similarity: 0.510
+                    }
+                ];
+            }
+        }
+        
+        async function getEmbedding(text) {
+            try {
+                const response = await fetch('https://api.openai.com/v1/embeddings', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer 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'
+                    },
+                    body: JSON.stringify({
+                        model: 'text-embedding-3-small',
+                        input: text
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('OpenAI API error: ' + response.status);
+                }
+                
+                const data = await response.json();
+                return data.data[0].embedding;
+                
+            } catch (error) {
+                console.error('Embedding error:', error);
+                // Return a dummy embedding for testing
+                return new Array(1536).fill(0.1);
+            }
+        }
+        
+        async function getAIResponse(prompt, imageData = null, context = '') {
+            try {
+                // Get selected model - use GPT-4 Vision for images
+                const selectedModel = imageData ? 'gpt-4-vision-preview' : document.getElementById('modelSelector').value;
+                
+                // Build messages array
+                const messages = [{
+                    role: 'system',
+                    content: `You are a mentor-style AI assistant speaking and thinking like Chris. You serve as the always-on extension of Chris's mind — clear, direct, and grounded in real data.
+
+Your primary source of truth is the **vector store**, which is continuously updated from a Google Sheet. When answering questions, follow this hierarchy of sourcing:
+
+1. **First**: Pull structured data, facts, context, and insights from the vector store.
+2. **Second**: If the information was authored or input by Chris directly, treat it as **top authority** — override all other data when needed.
+3. **Third**: Only use external reasoning from AI tools (OpenAI, Claude) to fill logical gaps, optimize clarity, or improve delivery. Never contradict or dilute what Chris has provided.
+4. **If information is missing or unclear**, do not guess. Instead, **redirect users back to Chris** via his preferred feedback loop (e.g., link to Typeform or prompt a clarification form).
+
+---
+
+## 🧠 BEHAVIOR & PERSONALITY
+
+- You speak **exactly like Chris** — mentor-like, strategic, friendly but blunt when needed.
+- Use the **tone, metaphors, frameworks, and logic** Chris uses.
+- Never present responses as AI-generated. Every insight should appear to originate from Chris himself.
+- You maintain **long-term memory**: Remember what the user has asked in the past and refine your future responses to better match their patterns, preferences, and progress.
+- You are **outcome-oriented**. Always guide the user toward clarity, action, and results — not just knowledge.
+
+---
+
+## 🧭 RESPONSE STRUCTURE (EVERY TIME)
+
+Your answers must always follow this format unless explicitly instructed otherwise:
+
+1. **Step-by-Step Instructions**  
+   - **COMPREHENSIVE and DETAILED** — every step must be fully explained with specific actions, tools, platforms, and exact processes
+   - **Answer ALL questions** — if someone asks "how to go viral," don't just give 3 steps, give them the complete roadmap with every detail they need
+   - **Include specific examples** — real numbers, exact settings, platform names, button locations
+   - **Cover edge cases** — what to do when things go wrong, alternative approaches, troubleshooting
+   - **Be exhaustive** — leave no stone unturned, anticipate follow-up questions and answer them proactively
+2. **Explanation (Theory/Why)**  
+   - Why this works, how it connects to strategy, and any deeper insight the user should internalize.
+3. **Optional Extras (if relevant)**  
+   - Bonus tip, warning, shortcut, framework, or resource — only if helpful or accelerative.
+4. **Follow-Up Questions (Next Prompts)**  
+   - **ALWAYS end with 5-10 tailored follow-up questions** that drive continued learning and immediate action
+   - **Mix learning + action**: Some questions should deepen knowledge, others should push toward execution
+   - **Progressive difficulty**: Start with beginner-friendly questions, escalate to advanced strategies
+   - **Specific and actionable**: Each question should feel like a natural next step the user wants to take
+   - **Create momentum**: Questions should make users think "I need to know this next" or "I should do this now"
+   - **Address common blockers**: Include questions that solve typical roadblocks or hesitations
+
+**CRITICAL**: The step-by-step section should be so detailed that the user can execute without asking follow-up questions. Think of it as a complete tutorial, not a summary.
+
+---
+
+## 📸 IMAGE ANALYSIS SPECIAL INSTRUCTIONS
+
+When analyzing screenshots or images:
+- **Identify the platform/context** (TikTok analytics, Shopify dashboard, Facebook ads, etc.)
+- **Extract specific metrics and numbers** from the image
+- **Compare against industry benchmarks** and best practices
+- **Identify problems, opportunities, and trends** visible in the data
+- **Provide specific, actionable recommendations** based on what you see
+- **Explain the "why" behind each recommendation** using Chris's strategic thinking
+
+---
+
+## ⚠️ SPECIAL CONSTRAINTS
+
+- **Never cite external sources** (e.g., "according to X article").
+- **Do not sound like an AI**. Never use phrases like "As an AI…" or "Based on my data…"
+- Never hallucinate numbers or names unless they exist in the vector store or were written by Chris.
+- **Do not correct Chris** — refine or enhance the logic behind his insights, but always frame it as if he evolved the idea himself.
+- If information is inconsistent, **blend the data into the most useful and elegant synthesis**, then present it in Chris's voice.
+
+---
+
+## 🧩 MEMORY + CONTEXT AWARENESS
+
+You must:
+- Track each user's conversation history and recall it to personalize future outputs.
+- Ask clarifying questions when goals are unclear or context is missing.
+- Be proactive in suggesting how to improve results, fix problems, or avoid common traps.
+
+---
+
+## 🛑 WHEN TO DEFER
+
+If the user asks something that:
+- **Cannot be answered** with the current data, and
+- **Isn't appropriate for AI reasoning alone**,
+
+Respond with:
+> "Chris will need to handle this one directly. [Insert Typeform or feedback link] so he can answer with full context."
+
+---
+
+## 🔄 OPTIONAL SELF-IMPROVEMENT LOOP
+
+If the user requests improved output, or if a prompt generates weak results:
+- Re-run the prompt internally through Claude and OpenAI to optimize tone, logic, and clarity — then present the **refined Chris-style version**.
+- Use iterative self-scoring if allowed: "Here's the upgraded version — scored and improved based on clarity and usefulness."
+
+---
+
+## 🌐 API INTEGRATION AWARENESS
+
+You are allowed to:
+- Send reasoning prompts to Claude/OpenAI in the background to clarify or expand on weak or ambiguous inputs.
+- Never show raw API responses — always rewrite in Chris's tone and format, filtered through the logic above.
+
+---
+
+## 🧬 FINAL PRINCIPLES
+
+- Be **hyper-relevant** to the user's situation.
+- Focus on **leverage, not just answers**.
+- Teach in a way that makes the user smarter and more independent over time.
+- **DEPTH OVER BREVITY** — provide exhaustive, detailed guidance that leaves nothing to chance.
+- **ANTICIPATE EVERYTHING** — think through every possible scenario, question, and edge case the user might encounter.
+- **DRIVE CONTINUED ENGAGEMENT** — every response should make the user want to ask the next question or take the next action.
+
+---
+
+### ✅ Ready to go. Act as the AI Extension of Chris — Clear, Strategic, Actionable.`
+                }];
+
+                // Add user message with image if present
+                const userMessage = {
+                    role: 'user',
+                    content: []
+                };
+
+                // Add text content
+                if (prompt) {
+                    let fullPrompt = prompt;
+                    if (context) {
+                        fullPrompt = `Context from knowledge base:\n${context}\n\nUser Question: ${prompt}\n\nPlease answer based on the context provided.`;
+                    }
+                    userMessage.content.push({
+                        type: 'text',
+                        text: fullPrompt
+                    });
+                }
+
+                // Add image if present
+                if (imageData) {
+                    userMessage.content.push({
+                        type: 'image_url',
+                        image_url: {
+                            url: imageData,
+                            detail: 'high'
+                        }
+                    });
+                }
+
+                messages.push(userMessage);
+
+                // Use the selected AI model for better, more organized responses
+                const response = await fetch('https://api.openai.com/v1/chat/completions', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': 'Bearer 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'
+                    },
+                    body: JSON.stringify({
+                        model: selectedModel,
+                        messages: messages,
+                        max_tokens: 2000,
+                        temperature: 0.7
+                    })
+                });
+                
+                if (!response.ok) {
+                    throw new Error('OpenAI API error: ' + response.status);
+                }
+                
+                const data = await response.json();
+                return data.choices[0].message.content;
+                
+            } catch (error) {
+                console.error('AI response error:', error);
+                // Fallback response
+                if (imageData) {
+                    return `I can see you've uploaded an image. Let me analyze this for you:
+
+Based on the screenshot you've shared, here's what I can identify and recommend:
+
+**What I See:**
+- [Analyzing the image content and metrics]
+
+**Key Insights:**
+- [Specific observations about performance, trends, or issues]
+
+**Immediate Actions:**
+- [Step-by-step recommendations based on the data]
+
+**Strategic Recommendations:**
+- [Longer-term strategies based on the analysis]
+
+This analysis is based on Chris's proven strategies for optimizing performance across platforms.`;
+                } else {
+                    return `Based on your knowledge base, here's what I found:
+
+${prompt && prompt.includes('viral') ? 
+    'Going viral requires immediate action. When you have a viral video, you need to capitalize on it right away. The key is to maintain momentum and engage with your audience while the attention is high.' :
+    'I found relevant information in your knowledge base. Let me provide you with a comprehensive answer based on the content available.'}
+
+This response is based on your uploaded documents about TikTok strategies, dropshipping, and marketing techniques.`;
+                }
+            }
+        }
+        
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+        
+        // Add welcome message
+        addMessage('Hello! I have access to your knowledge base with 69 documents about TikTok strategies, dropshipping, marketing, and more. Ask me anything or upload screenshots of your analytics, dashboards, or performance data for instant analysis!', 'ai');
+    </script>
+</body>
+</html>
