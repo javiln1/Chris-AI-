@@ -1849,6 +1849,7 @@
                         const apiKey = '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';
                         console.log('API Key length:', apiKey.length);
                         console.log('API Key:', apiKey);
+                        console.log('API Key ends with:', apiKey.slice(-10));
                         
                         const embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
                             method: 'POST',
@@ -1914,6 +1915,7 @@
                 const apiKey = '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';
                 console.log('Chat API Key length:', apiKey.length);
                 console.log('Chat API Key:', apiKey);
+                console.log('Chat API Key ends with:', apiKey.slice(-10));
                 
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
