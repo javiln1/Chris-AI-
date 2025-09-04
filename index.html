@@ -2041,8 +2041,9 @@ Remember: You are not just answering questions, you are mentoring users toward b
                 });
 
                 const data = await response.json();
+                console.log('OpenAI API Response:', data);
                 if (!data.choices || !data.choices[0]) {
-                    throw new Error('Invalid OpenAI response structure');
+                    throw new Error(`Invalid OpenAI response structure: ${JSON.stringify(data)}`);
                 }
                 return {
                     response: data.choices[0].message.content,
