@@ -2041,7 +2041,7 @@ Remember: You are not just answering questions, you are mentoring users toward b
             } catch (error) {
                 console.error('AI Error:', error);
                 return {
-                    response: 'Sorry, I encountered an error. Please try again.',
+                    response: `Sorry, I encountered an error: ${error.message}. Please try again.`,
                     sources: []
                 };
             }
@@ -2165,7 +2165,7 @@ Be outcome-oriented and focus on leverage, not just answers.`
                 const errorResponse = {
                     id: (Date.now() + 1).toString(),
                     type: 'ai',
-                    content: 'Sorry, I encountered an error. Please try again.',
+                    content: `Sorry, I encountered an error: ${error.message}. Please try again.`,
                     timestamp: new Date()
                 };
                 messages.push(errorResponse);
