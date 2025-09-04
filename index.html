@@ -1850,6 +1850,7 @@
                         console.log('API Key length:', apiKey.length);
                         console.log('API Key:', apiKey);
                         console.log('API Key ends with:', apiKey.slice(-10));
+                        console.log('API Key starts with:', apiKey.slice(0, 10));
                         
                         const embeddingResponse = await fetch('https://api.openai.com/v1/embeddings', {
                             method: 'POST',
@@ -1916,6 +1917,7 @@
                 console.log('Chat API Key length:', apiKey.length);
                 console.log('Chat API Key:', apiKey);
                 console.log('Chat API Key ends with:', apiKey.slice(-10));
+                console.log('Chat API Key starts with:', apiKey.slice(0, 10));
                 
                 const response = await fetch('https://api.openai.com/v1/chat/completions', {
                     method: 'POST',
