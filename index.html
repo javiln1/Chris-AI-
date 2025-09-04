@@ -1858,7 +1858,15 @@
                             })
                         });
 
+                        if (!embeddingResponse.ok) {
+                            const errorText = await embeddingResponse.text();
+                            throw new Error(`Embedding API error: ${embeddingResponse.status} - ${errorText}`);
+                        }
+
                         const embeddingData = await embeddingResponse.json();
+                        if (!embeddingData.data || !embeddingData.data[0]) {
+                            throw new Error('Invalid embedding response structure');
+                        }
                         const queryEmbedding = embeddingData.data[0].embedding;
 
                         // Search Supabase
@@ -2033,6 +2041,9 @@ Remember: You are not just answering questions, you are mentoring users toward b
                 });
 
                 const data = await response.json();
+                if (!data.choices || !data.choices[0]) {
+                    throw new Error('Invalid OpenAI response structure');
+                }
                 return {
                     response: data.choices[0].message.content,
                     sources: sources
@@ -2102,6 +2113,9 @@ Be outcome-oriented and focus on leverage, not just answers.`
                 });
 
                 const data = await response.json();
+                if (!data.choices || !data.choices[0]) {
+                    throw new Error('Invalid OpenAI response structure');
+                }
                 return {
                     response: data.choices[0].message.content,
                     sources: []
