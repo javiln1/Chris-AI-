@@ -463,7 +463,7 @@ You are allowed to:
                 if (prompt) {
                     let fullPrompt = prompt;
                     if (context) {
-                        fullPrompt = `Context from knowledge base:\n${context}\n\nUser Question: ${prompt}\n\nPlease answer based on the context provided.`;
+                        fullPrompt = `${prompt}\n\nContext from knowledge base:\n${context}`;
                     }
                     userMessage.content.push({
                         type: 'text',
@@ -544,7 +544,7 @@ This response is based on your uploaded documents about TikTok strategies, drops
                 sendMessage();
             }
         }
-        
+
         // Add welcome message
         addMessage('Hello! I have access to your knowledge base with 69 documents about TikTok strategies, dropshipping, marketing, and more. Ask me anything or upload screenshots of your analytics, dashboards, or performance data for instant analysis!', 'ai');
     </script>
